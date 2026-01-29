@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Signup – My Tenant Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body class="auth-page">
+  <div class="auth-container">
+    <!-- FRONT: SIGNUP FORM -->
+    <div class="auth-card active" id="signupCard">
+      <div class="auth-header">
+        <h1>Create Account</h1>
+        <p class="subtitle">Join My Tenant Manager</p>
+      </div>
+
+      <div class="auth-form">
+        <form id="signupForm">
+          <div class="field">
+            <input id="signupEmail" type="email" placeholder="Email" required>
+            <label>Email</label>
+          </div>
+
+          <div class="field">
+            <input id="signupPassword" type="password" placeholder="Password" required>
+            <label>Password</label>
+            <span class="toggle-password" id="toggleSignupPassword">👁</span>
+          </div>
+
+          <div class="field">
+            <select id="country" required>
+              <option value="">Select country</option>
+              <option value="PH">Philippines</option>
+              <option value="US">United States</option>
+              <option value="UK">United Kingdom</option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="termsCheck">
+            <label for="termsCheck">I accept the <a href="#" class="terms-link" data-modal="termsModal">Terms and Conditions</a></label>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="privacyCheck">
+            <label for="privacyCheck">I accept the <a href="#" class="terms-link" data-modal="privacyModal">Data Privacy Policy</a></label>
+          </div>
+
+          <button type="submit" id="signupBtn" class="auth-btn">
+            <span class="btn-text">CREATE ACCOUNT</span>
+            <span class="loading-dots"></span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>Already have an account? 
+            <a href="#" id="flipToLogin" class="flip-link">Login here</a>
+          </p>
+          <p class="copyright">My Tenant Manager © 2026<br>Created by Kryss Geo Cantago</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACK: LOGIN FORM -->
+    <div class="auth-card" id="loginCard">
+      <div class="auth-header">
+        <h1>Welcome Back</h1>
+        <p class="subtitle">Login to My Tenant Manager</p>
+      </div>
+
+      <div class="auth-form">
+        <form id="loginForm">
+          <div class="field">
+            <input id="loginEmail" type="email" placeholder="Email" required>
+            <label>Email</label>
+          </div>
+
+          <div class="field">
+            <input id="loginPassword" type="password" placeholder="Password" required>
+            <label>Password</label>
+            <span class="toggle-password" id="toggleLoginPassword">👁</span>
+          </div>
+
+          <button type="submit" id="loginBtn" class="auth-btn">
+            <span class="btn-text">LOGIN</span>
+            <span class="loading-dots"></span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          <p>Don't have an account? 
+            <a href="#" id="flipToSignup" class="flip-link">Sign up here</a>
+          </p>
+          <p class="copyright">My Tenant Manager © 2026<br>Created by Kryss Geo Cantago</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TERMS MODAL -->
+  <div class="modal-overlay" id="termsModal">
+    <div class="modal">
+      <h2>Terms and Conditions</h2>
+      <div class="modal-body">
+        <p>My Tenant Manager – Bronze Tier Last Updated: 2026...</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" data-close="termsModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIVACY MODAL -->
+  <div class="modal-overlay" id="privacyModal">
+    <div class="modal">
+      <h2>Data Privacy Policy</h2>
+      <div class="modal-body">
+        <p>My Tenant Manager – Bronze Tier Last Updated: 2026...</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" data-close="privacyModal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script type="module" src="./scripts/supabase.js"></script>
+  <script type="module" src="./scripts/auth.js"></script>
+  <script src="./scripts/ui.js"></script>
+</body>
+</html>
