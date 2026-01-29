@@ -22,7 +22,8 @@ async function checkAuthStatus() {
     
     if (session) {
         // If on login page, redirect to dashboard
-        if (window.location.pathname.includes('login.html')) {
+        if (window.location.pathname.includes('login.html') || 
+            window.location.pathname.includes('signup.html')) {
             window.location.href = '/index.html'
         }
     }
@@ -33,8 +34,8 @@ async function checkAuthStatus() {
 // ============================================
 function initFlipTransition() {
     const authContainer = document.querySelector('.auth-container')
-    const goToSignup = document.getElementById('goToSignup')
-    const goToLogin = document.getElementById('goToLogin')
+    const goToSignup = document.getElementById('flipToSignup')
+    const goToLogin = document.getElementById('flipToLogin')
     
     if (!authContainer) return
     
@@ -126,20 +127,17 @@ function initModals() {
 // LOGIN FUNCTIONALITY
 // ============================================
 function initLogin() {
+    const loginForm = document.getElementById('loginForm')
     const loginBtn = document.getElementById('loginBtn')
-    if (!loginBtn) return
     
-    loginBtn.addEventListener('click', handleLogin)
-    
-    // Also allow Enter key in form
-    document.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !document.querySelector('.auth-container').classList.contains('flipped')) {
-            handleLogin()
-        }
-    })
+    if (loginForm && loginBtn) {
+        loginForm.addEventListener('submit', handleLogin)
+    }
 }
 
-async function handleLogin() {
+async function handleLogin(e) {
+    e.preventDefault()
+    
     const loginBtn = document.getElementById('loginBtn')
     const email = document.getElementById('loginEmail')?.value.trim()
     const password = document.getElementById('loginPassword')?.value
@@ -183,20 +181,17 @@ async function handleLogin() {
 // SIGNUP FUNCTIONALITY
 // ============================================
 function initSignup() {
+    const signupForm = document.getElementById('signupForm')
     const signupBtn = document.getElementById('signupBtn')
-    if (!signupBtn) return
     
-    signupBtn.addEventListener('click', handleSignup)
-    
-    // Also allow Enter key in form
-    document.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && document.querySelector('.auth-container').classList.contains('flipped')) {
-            handleSignup()
-        }
-    })
+    if (signupForm && signupBtn) {
+        signupForm.addEventListener('submit', handleSignup)
+    }
 }
 
-async function handleSignup() {
+async function handleSignup(e) {
+    e.preventDefault()
+    
     const signupBtn = document.getElementById('signupBtn')
     const email = document.getElementById('signupEmail')?.value.trim()
     const password = document.getElementById('signupPassword')?.value
@@ -273,7 +268,7 @@ async function handleSignup() {
         document.getElementById('signupForm')?.reset()
         
         // Flip back to login
-        document.querySelector('.auth-container').classList.remove('flipped')
+        document.querySelector('.auth-container')?.classList.remove('flipped')
         
     } catch (error) {
         console.error('Signup error:', error)
@@ -298,15 +293,17 @@ function showLoadingModal() {
     
     // Step 1: Authenticating (immediate)
     setTimeout(() => {
-        steps[0].classList.add('completed')
-        steps[1].classList.add('active')
+        if (steps[0]) steps[0].classList.add('completed')
+        if (steps[1]) steps[1].classList.add('active')
     }, 1000)
     
     // Step 2: Loading Data (after 2.5s)
     setTimeout(() => {
-        steps[1].classList.remove('active')
-        steps[1].classList.add('completed')
-        steps[2].classList.add('active')
+        if (steps[1]) {
+            steps[1].classList.remove('active')
+            steps[1].classList.add('completed')
+        }
+        if (steps[2]) steps[2].classList.add('active')
     }, 3500)
 }
 
@@ -316,9 +313,12 @@ function showLoadingModal() {
 async function autoRedirectIfLoggedIn() {
     const { data: { session } } = await supabase.auth.getSession()
     
-    if (session && window.location.pathname.includes('login.html')) {
+    if (session) {
         // Already logged in, redirect to dashboard
-        window.location.href = '/index.html'
+        if (window.location.pathname.includes('login.html') || 
+            window.location.pathname.includes('signup.html')) {
+            window.location.href = '/index.html'
+        }
     }
 }
 
