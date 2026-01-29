@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - My Tenant Manager (Cebu)</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        html { visibility: hidden; opacity: 0; }
+        
+        /* Dashboard-specific styles */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-desc {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .quick-action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .quick-action-card:hover {
+            border-color: var(--primary-brown);
+            background: #fefaf6;
+            transform: translateY(-2px);
+        }
+        
+        .quick-action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .payment-option {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .payment-option:hover {
+            border-color: var(--primary-brown);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .payment-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary-brown);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .attention-item {
+            padding: 1rem;
+            border-left: 4px solid #f59e0b;
+            background: #fffbeb;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+        }
+        
+        .attention-item.warning {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .attention-item.success {
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script type="module">
+        import { supabase } from "./scripts/supabase.js";
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+            window.location.replace("/login.html");
+        } else {
+            document.documentElement.style.visibility = "visible";
+            document.documentElement.style.opacity = "1";
+        }
+    </script>
+</head>
+<body>
+    <!-- MOBILE HEADER -->
+    <div class="mobile-header">
+        <div class="brand">
+            <span class="brand-icon">🏠</span>
+            <span class="brand-text">My Tenant Manager</span>
+        </div>
+        <button class="menu-btn" id="openMenu">☰ Menu</button>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <button class="mobile-menu-close" id="closeMenu">×</button>
+            <div class="nav-group">
+                <div class="nav-title">Main</div>
+                <a class="nav-link active" href="/index.html">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a class="nav-link" href="/tenants.html">
+                    <span class="nav-icon">👥</span>
+                    Tenants
+                </a>
+                <a class="nav-link" href="/rent.html">
+                    <span class="nav-icon">💰</span>
+                    Rent
+                </a>
+                <a class="nav-link" href="/utilities.html">
+                    <span class="nav-icon">⚡</span>
+                    Utilities
+                </a>
+                <a class="nav-link" href="/payments.html">
+                    <span class="nav-icon">💵</span>
+                    Payments
+                </a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-title">Reports</div>
+                <a class="nav-link" href="/ledger.html">
+                    <span class="nav-icon">📒</span>
+                    General Ledger
+                </a>
+                <a class="nav-link" href="/tenant-ledger.html">
+                    <span class="nav-icon">📋</span>
+                    Tenant Ledger
+                </a>
+            </div>
+            <div class="nav-group">
+                <div class="nav-title">Settings</div>
+                <a class="nav-link" href="/profile.html">
+                    <span class="nav-icon">👤</span>
+                    My Profile
+                </a>
+                <a class="nav-link" href="/settings.html">
+                    <span class="nav-icon">⚙️</span>
+                    App Settings
+                </a>
+                <a class="nav-link logout-btn" href="#" id="mobileLogout">
+                    <span class="nav-icon">🚪</span>
+                    Logout
+                </a>
+            </div>
+            <div class="sidebar-footer">
+                <div class="tier-badge">BRONZE TIER</div>
+                <div class="copyright">Cebu Edition © 2026</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app">
+        <!-- DESKTOP SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <div class="logo-text">My Tenant Manager</div>
+                <div class="logo-sub">Cebu Edition</div>
+                <div class="tier-badge" style="margin-top: 0.5rem;">BRONZE TIER</div>
+            </div>
+            
+            <div class="nav-group">
+                <div class="nav-title">Main</div>
+                <a class="nav-link active" href="/index.html">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a class="nav-link" href="/tenants.html">
+                    <span class="nav-icon">👥</span>
+                    Tenants
+                </a>
+                <a class="nav-link" href="/rent.html">
+                    <span class="nav-icon">💰</span>
+                    Rent
+                </a>
+                <a class="nav-link" href="/utilities.html">
+                    <span class="nav-icon">⚡</span>
+                    Utilities
+                </a>
+                <a class="nav-link" href="/payments.html">
+                    <span class="nav-icon">💵</span>
+                    Payments
+                </a>
+            </div>
+            
+            <div class="nav-group">
+                <div class="nav-title">Reports</div>
+                <a class="nav-link" href="/ledger.html">
+                    <span class="nav-icon">📒</span>
+                    General Ledger
+                </a>
+                <a class="nav-link" href="/tenant-ledger.html">
+                    <span class="nav-icon">📋</span>
+                    Tenant Ledger
+                </a>
+            </div>
+            
+            <div class="nav-group">
+                <div class="nav-title">Settings</div>
+                <a class="nav-link" href="/profile.html">
+                    <span class="nav-icon">👤</span>
+                    My Profile
+                </a>
+                <a class="nav-link" href="/settings.html">
+                    <span class="nav-icon">⚙️</span>
+                    App Settings
+                </a>
+                <a class="nav-link logout-btn" href="#" id="logoutBtn">
+                    <span class="nav-icon">🚪</span>
+                    Logout
+                </a>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="copyright">My Tenant Manager © 2026</div>
+                <div class="version">v1.0 • Cebu Edition</div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+            <div class="container">
+                <!-- PAGE HEADER -->
+                <div class="page-header">
+                    <div>
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Welcome back! Here's your rental property overview.</p>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="btn-primary" onclick="window.location.href='/tenants.html'">
+                            + Add Tenant
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FINANCIAL SUMMARY -->
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #e0f2fe; color: #0369a1;">
+                            💰
+                        </div>
+                        <div class="stat-label">Total Monthly Rent</div>
+                        <div class="stat-value" id="totalRent">₱0.00</div>
+                        <div class="stat-desc">From <span id="activeTenants">0</span> active tenants</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #dcfce7; color: #16a34a;">
+                            ⚡
+                        </div>
+                        <div class="stat-label">Utilities Due</div>
+                        <div class="stat-value" id="utilitiesDue">₱0.00</div>
+                        <div class="stat-desc">This month's charges</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fef3c7; color: #d97706;">
+                            💵
+                        </div>
+                        <div class="stat-label">Payments Received</div>
+                        <div class="stat-value" id="paymentsReceived">₱0.00</div>
+                        <div class="stat-desc">This month's collections</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon" style="background: #fee2e2; color: #dc2626;">
+                            ⚖️
+                        </div>
+                        <div class="stat-label">Outstanding Balance</div>
+                        <div class="stat-value" id="outstandingBalance">₱0.00</div>
+                        <div class="stat-desc">Total overdue amount</div>
+                    </div>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Quick Actions</h2>
+                    </div>
+                    <div class="quick-actions-grid">
+                        <div class="quick-action-card" onclick="window.location.href='/tenants.html'">
+                            <div class="quick-action-icon">👤</div>
+                            <h3>Add Tenant</h3>
+                            <p class="text-muted">Register new tenant</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.location.href='/rent.html'">
+                            <div class="quick-action-icon">📅</div>
+                            <h3>Generate Rent</h3>
+                            <p class="text-muted">Create monthly charges</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.location.href='/payments.html'">
+                            <div class="quick-action-icon">💳</div>
+                            <h3>Record Payment</h3>
+                            <p class="text-muted">Log tenant payment</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.location.href='/utilities.html'">
+                            <div class="quick-action-icon">📊</div>
+                            <h3>Add Utilities</h3>
+                            <p class="text-muted">Record utility charges</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NEEDS ATTENTION & RECENT ACTIVITY -->
+                <div class="grid-2-col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <!-- Needs Attention -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Needs Attention</h2>
+                            <span class="badge" id="attentionCount">0</span>
+                        </div>
+                        <div id="attentionList">
+                            <div class="attention-item success">
+                                <strong>✓ All Good</strong>
+                                <p>No outstanding issues at the moment.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Activity</h2>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Tenant</th>
+                                        <th>Type</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentActivity">
+                                    <tr>
+                                        <td colspan="4" class="text-center p-4">
+                                            <div class="loading-spinner"></div>
+                                            <p>Loading activity...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PAYMENT METHODS -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Payment Methods</h2>
+                        <p class="text-muted">Accept payments easily</p>
+                    </div>
+                    <div class="payment-options">
+                        <div class="payment-option" onclick="showGCashQR()">
+                            <div class="payment-icon">💳</div>
+                            <h3>GCash</h3>
+                            <p class="text-muted">Pay via QR or number</p>
+                            <button class="btn-secondary btn-sm" style="margin-top: 0.5rem;">
+                                View Details
+                            </button>
+                        </div>
+                        
+                        <div class="payment-option" onclick="sendPaymentLink()">
+                            <div class="payment-icon">📱</div>
+                            <h3>SMS Payment</h3>
+                            <p class="text-muted">Send payment link via SMS</p>
+                            <button class="btn-secondary btn-sm" style="margin-top: 0.5rem;">
+                                Send SMS
+                            </button>
+                        </div>
+                        
+                        <div class="payment-option" onclick="showBankDetails()">
+                            <div class="payment-icon">🏦</div>
+                            <h3>Bank Transfer</h3>
+                            <p class="text-muted">Direct bank deposit</p>
+                            <button class="btn-secondary btn-sm" style="margin-top: 0.5rem;">
+                                View Details
+                            </button>
+                        </div>
+                        
+                        <div class="payment-option" onclick="showCashInstructions()">
+                            <div class="payment-icon">💰</div>
+                            <h3>Cash</h3>
+                            <p class="text-muted">In-person payment</p>
+                            <button class="btn-secondary btn-sm" style="margin-top: 0.5rem;">
+                                Instructions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- GCASH MODAL -->
+    <div class="modal-overlay" id="gcashModal">
+        <div class="modal">
+            <h2>GCash Payment</h2>
+            <div style="text-align: center;">
+                <div class="qr-placeholder" style="width: 200px; height: 200px; background: #f3f4f6; margin: 20px auto; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 48px;">💳</div>
+                        <p>GCash QR Code</p>
+                    </div>
+                </div>
+                <p><strong>GCash Number:</strong> 0917-XXX-XXXX</p>
+                <p><strong>Account Name:</strong> My Tenant Manager</p>
+                <p><strong>Reference:</strong> Tenant Name + Unit</p>
+                <p class="small-text text-muted">Send exact amount and include tenant name as reference</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" data-close="gcashModal">Close</button>
+                <button class="btn-primary" onclick="copyGCashNumber()">Copy Number</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS MODAL -->
+    <div class="modal-overlay" id="smsModal">
+        <div class="modal">
+            <h2>SMS Payment Link</h2>
+            <p>Send an SMS to: <strong>0917-XXX-XXXX</strong></p>
+            <div class="code-block" style="background: #f3f4f6; padding: 1rem; border-radius: 8px; margin: 1rem 0; font-family: monospace;">
+                PAY [Amount] [Tenant Name]
+            </div>
+            <p class="text-muted">Example: PAY 5000 John Doe</p>
+            <p class="text-muted">You will receive a payment confirmation SMS.</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" data-close="smsModal">Close</button>
+                <button class="btn-primary" onclick="window.open('sms:09171234567&body=PAY%20RENT', '_blank')">
+                    Send SMS
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script type="module" src="./scripts/dashboard.js"></script>
+    <script src="./scripts/ui.js"></script>
+</body>
+</html>
